@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gamified Brand Awareness - Shaggar BPO Edition</title>
+<style>
+/* 1. CORE STYLES */
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg,#eef3ff,#dce8ff);
+    color: #333;
+    text-align:center;
+    overflow-x: hidden;
+}
+
+#headerLogo { margin: 20px 0 10px 0; }
+#headerLogo img { width: 100px; height: 100px; }
+#headerLogo h2 { margin: 8px 0 0 0; color: #1a3c6e; font-size: 20px; font-weight:700; }
+
+h1 { margin-bottom:20px; color:#1a3c6e; }
+
+/* 2. MENU & CONTROLS */
+#menu { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+#menu button, #menu select, #menu input[type="file"] {
+    padding: 10px 16px; border-radius:12px; border:1px solid #ccc; cursor:pointer; width:150px;
+}
+#menu button { background:#1a73e8; color:white; border:none; font-weight:500; }
+#menu button:hover { background:#1357b8; }
+
+/* 3. LAYOUT AREA */
+#mainArea { display:flex; justify-content:center; gap:20px; flex-wrap:wrap; margin:20px; }
+
+/* 4. PUZZLE BOARD (Thin Grid Lines) */
+#board {
+    background:#b0bec5; /* Thin line color */
+    border-radius:8px;
+    box-shadow:0 15px 35px rgba(0,0,0,.2);
+    overflow:hidden;
+    width: 400px;
+    height: 400px;
+    display: grid;
+    gap: 1px; /* The "Small thin line" separation */
+    touch-action: none;
+    margin: 0 auto;
+    border: 2px solid #fff;
+}
+
+#board.winner-glow {
+    box-shadow: 0 0 50px #ffd700;
+    transform: scale(1.03);
+    border: 5px solid #ffd700;
+    transition: 0.5s;
+    gap: 0px; 
+}
+
+.piece {
+    background-repeat: no-repeat;
+    cursor: grab;
+    box-sizing: border-box;
+    outline: 0.5px solid rgba(255,255,255,0.1); 
+}
+.piece:active { cursor: grabbing; opacity: 0.8; }
+
+/* 5. SIDE PANEL & PREVIEW */
+.panel {
+    background:white; padding:20px; width:min(92vw,240px);
+    border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,.1); text-align:left;
+}
+#preview { width:100%; border-radius:8px; margin-bottom:15px; border:2px solid #ddd; }
+#timer,#moves,#score,#best { margin:6px 0; font-weight:600; color:#1a3c6e; }
+
+/* 6. QR & SOCIAL CARD */
+#qrSocialCard {
+    display:flex; flex-direction:column; align-items:center; gap:10px; background:white;
+    padding:20px; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,.1); width:240px;
+}
+#qrSocialCard .qr { width:100%; max-width:220px; }
+#qrSocialCard h4 { margin:0; color:#1a3c6e; font-size:16px; font-weight:600; }
+#qrSocialCard .socials { display:flex; gap:10px; justify-content:center; }
+#qrSocialCard .socials a img { width:32px; height:32px; }
+#qrSocialCard p { margin:4px 0 0 0; font-weight:500; color:#1a3c6e; }
+
+/* 7. SERVICES PANEL */
+#servicesPanel {
+    width: min(92vw, 300px); padding:20px; background:white; border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,.1); text-align:left;
+}
+#servicesPanel h3 { font-size:18px; color:#1a3c6e; font-weight:700; margin-bottom:15px; }
+.service-card {
+    background:#1a3c6e; color:white; padding:12px; border-radius:12px;
+    display:flex; align-items:center; gap:10px; cursor:pointer;
+    transition: transform 0.3s; font-weight:500; margin-bottom:10px;
+}
+.service-card img { width:28px; height:28px; }
+.service-card:hover { background:#1357b8; transform: scale(1.05); }
+
+/* 8. WIN MODAL & ANIMATIONS */
+#winMessage {
+    position: fixed; top:50%; left:50%; transform: translate(-50%,-50%);
+    background:white; padding:40px; border-radius:20px; box-shadow:0 25px 70px rgba(0,0,0,.4);
+    display:none; z-index:2000;
+    border: 10px solid;
+    border-image: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000) 1;
+    animation: borderRotate 2s linear infinite, popup .4s ease-out forwards;
+}
+
+@keyframes borderRotate { 100% { filter: hue-rotate(360deg); } }
+@keyframes popup { from{ transform:translate(-50%,-60%) scale(.7); opacity:0; } to{ transform:translate(-50%,-50%) scale(1); opacity:1; } }
+
+.confetti {
+    position: fixed; width: 12px; height: 12px; top: -20px; z-index: 1500;
+    animation: fall 3.5s ease-in-out forwards;
+}
+@keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+
+#serviceModal {
+    display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+    background:white; padding:25px; border-radius:12px; box-shadow:0 15px 50px rgba(0,0,0,.3); z-index:1000;
+}
+
+@media(max-width:850px){
+    #mainArea { flex-direction: column; align-items:center; }
+    .panel, #servicesPanel, #qrSocialCard { width:90%; position:relative; height:auto; }
+    #board { width: 340px; height: 340px; }
+}
+</style>
+</head>
+<body>
+
+<div id="headerLogo">
+    <img src="https://www.shaggarbpo.com/wp-content/uploads/2026/01/cropped-Icon_only_primary.png" alt="Shaggar BPO Logo">
+    <h2>Shaggar BPO</h2>
+</div>
+
+<h1>Gamified Brand Awareness</h1>
+
+<div id="menu">
+    <button onclick="startGame()">Start New Game</button>
+    <button onclick="shufflePieces()">Shuffle</button>
+    <button onclick="imageInput.click()">Upload Brand Image</button>
+    <select id="difficulty">
+        <option value="3">Easy 3×3</option>
+        <option value="4" selected>Medium 4×4</option>
+        <option value="5">Hard 5×5</option>
+    </select>
+    <input type="file" id="imageInput" accept="image/*" hidden>
+</div>
+
+<div id="mainArea">
+    <div id="qrSocialCard">
+        <img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://www.shaggarbpo.com" alt="QR Code">
+        <h4>Scan Me</h4>
+        <div class="socials">
+            <a href="#"><img src="https://img.icons8.com/ios-filled/50/1877f2/facebook.png"/></a>
+            <a href="#"><img src="https://img.icons8.com/ios-filled/50/0a66c2/linkedin.png"/></a>
+            <a href="#"><img src="https://img.icons8.com/ios-filled/50/e4405f/instagram-new.png"/></a>
+            <a href="#"><img src="https://img.icons8.com/ios-filled/50/25d366/whatsapp.png"/></a>
+        </div>
+        <p>Shaggar BPO</p>
+    </div>
+
+    <div id="board"></div>
+
+    <div class="panel" id="sidePanel">
+        <img id="preview" src="https://via.placeholder.com/400">
+        <div id="timer">Time: 0 sec</div>
+        <div id="moves">Moves: 0</div>
+        <div id="score">Score: 0</div>
+        <div id="best">Best Score: 0</div>
+    </div>
+
+    <div id="servicesPanel">
+        <h3>Our Services</h3>
+        <div class="service-card" onclick="showService('Software Development: Full stack solutions.')"><img src="https://img.icons8.com/ios-filled/50/ffffff/source-code.png"/> Software Development</div>
+        <div class="service-card" onclick="showService('CX Partner: Customer support & engagement.')"><img src="https://img.icons8.com/ios-filled/50/ffffff/customer-support.png"/> CX Partner</div>
+        <div class="service-card" onclick="showService('Brand Development: Identity & strategy.')"><img src="https://img.icons8.com/ios-filled/50/ffffff/idea.png"/> Brand Development</div>
+        <div class="service-card" onclick="showService('Digital Marketing: Growth & campaigns.')"><img src="https://img.icons8.com/ios-filled/50/ffffff/marketing.png"/> Digital Marketing</div>
+        <div class="service-card" onclick="showService('Sales and Strategy: Revenue optimization.')"><img src="https://img.icons8.com/ios-filled/50/ffffff/sales-performance.png"/> Sales and Strategy</div>
+    </div>
+</div>
+
+<div id="winMessage">
+    <h2>🏆 WINNER! 🏆</h2>
+    <p style="font-size: 18px; font-weight: bold;">You are a puzzle master!</p>
+    <div id="finalStats" style="margin: 20px 0; font-size: 18px;"></div>
+    <button onclick="startGame()" style="padding: 12px 25px; border:none; border-radius:8px; background:#1a73e8; color:white; font-weight:bold; cursor:pointer;">Play Again</button>
+</div>
+
+<div id="serviceModal">
+    <p id="serviceText" style="margin:0; font-weight:500;"></p>
+    <button onclick="closeServiceModal()" style="margin-top:15px; padding:6px 12px; border:none; border-radius:6px; background:#1a73e8; color:white; cursor:pointer;">Close</button>
+</div>
+
+<script>
+// --- CORE LOGIC ---
+let size=4, board=document.getElementById("board");
+let moves=0, time=0, score=0, timer=null, dragged=null;
+let currentImage="https://via.placeholder.com/600";
+let bestScore=localStorage.getItem("bestScore")||0;
+let isPlaying = false;
+const imageInput=document.getElementById("imageInput");
+
+// Image Upload Handler
+imageInput.addEventListener("change", e=>{
+    const file=e.target.files[0]; if(!file) return;
+    const img=new Image(); const reader=new FileReader();
+    reader.onload=ev=>{ img.src=ev.target.result; };
+    img.onload=()=>{
+        const canvas=document.createElement("canvas");
+        canvas.width=400; canvas.height=400;
+        const ctx=canvas.getContext("2d");
+        let sMin=Math.min(img.width,img.height);
+        ctx.drawImage(img,(img.width-sMin)/2,(img.height-sMin)/2,sMin,sMin,0,0,400,400);
+        currentImage=canvas.toDataURL();
+        document.getElementById("preview").src=currentImage;
+        startGame(); // Timer starts only after image is ready
+    };
+    reader.readAsDataURL(file);
+});
+
+function startGame(){ 
+    isPlaying = true;
+    document.getElementById("winMessage").style.display="none"; 
+    board.classList.remove("winner-glow");
+    size=parseInt(document.getElementById("difficulty").value); 
+    moves=time=score=0; 
+    clearInterval(timer); 
+    timer=setInterval(()=>{ if(isPlaying){ time++; updatePanel(); } },1000); 
+    createPieces(); 
+    shufflePieces(); 
+    updatePanel();
+}
+
+function createPieces(){ 
+    board.innerHTML=""; 
+    board.style.gridTemplateColumns=`repeat(${size},1fr)`; 
+    let pSize=400/size; 
+    for(let i=0; i < (size*size); i++){ 
+        let r = Math.floor(i/size);
+        let c = i % size;
+        let p=document.createElement("div"); 
+        p.className="piece"; 
+        p.style.backgroundImage=`url(${currentImage})`; 
+        p.style.backgroundSize=`400px 400px`; 
+        p.style.backgroundPosition = `${-(c * pSize)}px ${-(r * pSize)}px`;
+        p.dataset.correctIndex = i; 
+        p.draggable=true; 
+        
+        p.addEventListener("dragstart",()=>dragged=p); 
+        p.addEventListener("dragover",e=>e.preventDefault()); 
+        p.addEventListener("drop",()=>swap(p)); 
+        p.addEventListener("touchstart",()=>dragged=p); 
+        p.addEventListener("touchend",e=>{
+            let t=document.elementFromPoint(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
+            if(t && t.className==='piece') swap(t);
+        });
+        board.appendChild(p);
+    }
+}
+
+function shufflePieces(){ 
+    let pieces=Array.from(board.children); 
+    for (let i = pieces.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        board.appendChild(pieces[j]); 
+    }
+    if(checkWinStatus()) shufflePieces();
+    moves=0; 
+    updatePanel();
+}
+
+function swap(target){ 
+    if(!dragged || dragged === target || !isPlaying) return; 
+    
+    // Position Swap Logic
+    let pieces = Array.from(board.children);
+    let i = pieces.indexOf(dragged);
+    let j = pieces.indexOf(target);
+    
+    // Swap elements in the DOM (trading places)
+    let tempNode = document.createElement("div");
+    board.insertBefore(tempNode, dragged);
+    board.insertBefore(dragged, target);
+    board.insertBefore(target, tempNode);
+    tempNode.remove();
+
+    moves++; 
+    calculateScore(); 
+    updatePanel(); 
+    checkWin(); 
+    new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3").play().catch(()=>{});
+}
+
+function checkWinStatus() {
+    let pieces = Array.from(board.children);
+    return pieces.every((p, index) => parseInt(p.dataset.correctIndex) === index);
+}
+
+function checkWin(){ 
+    if(checkWinStatus()){ 
+        isPlaying = false; clearInterval(timer); 
+        board.classList.add("winner-glow");
+        launchConfetti(); 
+        if(score>bestScore){ bestScore=score; localStorage.setItem("bestScore",score); }
+        document.getElementById("finalStats").innerHTML = `🏆 Score: ${score}<br>🧩 Moves: ${moves}<br>⏱ Time: ${time} sec`; 
+        document.getElementById("winMessage").style.display="block";
+        new Audio("https://assets.mixkit.co/active_storage/sfx/2764/2764-preview.mp3").play().catch(()=>{});
+    }
+}
+
+function calculateScore(){ score=Math.max(0,(size*size*200)-(moves*10+time)); }
+
+function updatePanel(){ 
+    document.getElementById("timer").innerHTML=`Time: ${time} sec`; 
+    document.getElementById("moves").innerHTML=`Moves: ${moves}`; 
+    document.getElementById("score").innerHTML=`Score: ${score}`; 
+    document.getElementById("best").innerHTML=`Best Score: ${bestScore}`;
+}
+
+function launchConfetti(){ 
+    for(let i=0;i<100;i++){ 
+        let c=document.createElement("div"); c.className="confetti"; 
+        c.style.left=Math.random()*100+"vw"; c.style.background=`hsl(${Math.random()*360},80%,60%)`; 
+        c.style.animationDuration=(2+Math.random()*2)+"s"; document.body.appendChild(c); 
+        setTimeout(()=>c.remove(),4000); 
+    } 
+}
+
+function showService(t){ 
+    document.getElementById("serviceText").innerText=t; 
+    document.getElementById("serviceModal").style.display="block"; 
+}
+function closeServiceModal(){ 
+    document.getElementById("serviceModal").style.display="none"; 
+}
+
+// Init
+createPieces();
+updatePanel();
+</script>
+</body>
+</html>
