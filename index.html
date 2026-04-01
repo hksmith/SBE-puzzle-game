@@ -16,22 +16,19 @@ body {
 }
 
 #headerLogo { margin: 20px 0 10px 0; }
-#headerLogo img { width: 100px; height: 100px; }
+#headerLogo img { width: 80px; height: 80px; }
 #headerLogo h2 { margin: 8px 0 0 0; color: #1a3c6e; font-size: 20px; font-weight:700; }
 
-h1 { margin-bottom:20px; color:#1a3c6e; }
+h1 { margin: 10px 0 20px 0; color:#1a3c6e; font-size: 24px; }
 
 /* 2. MENU & CONTROLS */
-#menu { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+#menu { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:20px; padding: 0 10px; }
 #menu button, #menu select {
-    padding: 12px 20px; border-radius:12px; border:1px solid #ccc; cursor:pointer; width:180px; font-weight:600;
+    padding: 12px; border-radius:12px; border:1px solid #ccc; cursor:pointer; width:140px; font-weight:600; font-size: 14px;
 }
-/* Green Start Button */
 #startBtn { background:#28a745; color:white; border:none; }
 #startBtn:hover { background:#218838; }
-
 #shuffleBtn { background:#1a73e8; color:white; border:none; }
-#shuffleBtn:hover { background:#1357b8; }
 
 /* 3. LAYOUT AREA */
 #mainArea { 
@@ -40,40 +37,43 @@ h1 { margin-bottom:20px; color:#1a3c6e; }
     align-items: flex-start;
     gap:20px; 
     flex-wrap:wrap; 
-    margin:20px; 
+    margin:10px; 
 }
 
-/* 4. PREVIEW PANEL (Now on the Left) */
+/* 4. PREVIEW PANEL */
 #previewPanel {
-    background:white; padding:20px; width:240px;
+    background:white; padding:15px; width:240px;
     border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,.1); text-align:center;
-    order: 1; /* Force first in flex */
+    order: 1;
 }
 #previewPanel h4 { margin: 0 0 10px 0; color: #1a3c6e; }
-#preview { width:100%; border-radius:8px; border:2px solid #ddd; margin-bottom:15px; }
-.stat-box { margin:8px 0; font-weight:700; color:#1a3c6e; font-size: 1.1em; text-align: left; }
+#preview { width:120px; height:120px; border-radius:8px; border:2px solid #ddd; margin-bottom:10px; }
+.stat-box { margin:5px 0; font-weight:700; color:#1a3c6e; font-size: 15px; text-align: center; }
 
-/* 5. PUZZLE BOARD */
+/* 5. PUZZLE BOARD - RESPONSIVE */
+#boardWrapper {
+    width: min(95vw, 400px);
+    margin: 0 auto;
+    order: 2;
+}
+
 #board {
     background:#b0bec5; 
     border-radius:8px;
     box-shadow:0 15px 35px rgba(0,0,0,.2);
     overflow:hidden;
-    width: 400px;
-    height: 400px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
     display: grid;
     gap: 1px; 
     touch-action: none;
-    margin: 0 auto;
     border: 2px solid #fff;
-    order: 2;
 }
 
 #board.winner-glow {
     box-shadow: 0 0 50px #ffd700;
-    transform: scale(1.03);
-    border: 5px solid #ffd700;
-    transition: 0.5s;
+    transform: scale(1.02);
+    border: 4px solid #ffd700;
     gap: 0px; 
 }
 
@@ -83,7 +83,6 @@ h1 { margin-bottom:20px; color:#1a3c6e; }
     box-sizing: border-box;
     outline: 0.5px solid rgba(255,255,255,0.1); 
 }
-.piece:active { cursor: grabbing; opacity: 0.8; }
 
 /* 6. SERVICES PANEL */
 #servicesPanel {
@@ -95,12 +94,12 @@ h1 { margin-bottom:20px; color:#1a3c6e; }
 .service-card {
     background:#1a3c6e; color:white; padding:12px; border-radius:12px;
     display:flex; align-items:center; gap:10px; cursor:pointer;
-    transition: transform 0.3s; font-weight:500; margin-bottom:10px;
+    transition: transform 0.2s; font-weight:500; margin-bottom:10px; font-size: 14px;
 }
-.service-card img { width:24px; height:24px; }
-.service-card:hover { background:#1357b8; transform: scale(1.05); }
+.service-card img { width:20px; height:20px; }
+.service-card:hover { transform: scale(1.03); }
 
-/* 7. WIN MODAL */
+/* 7. WIN MODAL & CELEBRATION */
 #winMessage {
     position: fixed; top:50%; left:50%; transform: translate(-50%,-50%);
     background:white; padding:40px; border-radius:20px; box-shadow:0 25px 70px rgba(0,0,0,.4);
@@ -119,19 +118,12 @@ h1 { margin-bottom:20px; color:#1a3c6e; }
 }
 @keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
 
-#serviceModal {
-    display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-    background:white; padding:25px; border-radius:12px; box-shadow:0 15px 50px rgba(0,0,0,.3); z-index:1000;
-}
-
 /* MOBILE ADAPTATION */
 @media(max-width:850px){
     #mainArea { flex-direction: column; align-items:center; }
-    #previewPanel, #servicesPanel { width:90%; }
-    #board { width: 90vw; height: 90vw; }
-    #previewPanel { order: 1; } /* Target image shows first on mobile */
-    #board { order: 2; }
-    #servicesPanel { order: 3; }
+    #previewPanel, #servicesPanel { width: 90vw; box-sizing: border-box; }
+    #preview { width: 80px; height: 80px; }
+    .stat-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
 }
 </style>
 </head>
@@ -145,7 +137,7 @@ h1 { margin-bottom:20px; color:#1a3c6e; }
 <h1>Brand Master Puzzle</h1>
 
 <div id="menu">
-    <button id="startBtn" onclick="startGame()">Start New Game</button>
+    <button id="startBtn" onclick="startGame()">Start Game</button>
     <button id="shuffleBtn" onclick="shufflePieces()">Shuffle</button>
     <select id="difficulty" onchange="createPieces()">
         <option value="3">Easy 3×3</option>
@@ -156,45 +148,50 @@ h1 { margin-bottom:20px; color:#1a3c6e; }
 
 <div id="mainArea">
     <div id="previewPanel">
-        <h4>Target Image</h4>
+        <h4>Goal</h4>
         <img id="preview" src="https://www.shaggarbpo.com/wp-content/uploads/2026/01/cropped-Icon_only_primary.png">
-        <div class="stat-box" id="timer">⏱ Time: 0s</div>
-        <div class="stat-box" id="moves">🧩 Moves: 0</div>
-        <div class="stat-box" id="score">⭐ Score: 0</div>
-        <div class="stat-box" id="best">🏆 Best: 0</div>
+        <div class="stat-container">
+            <div class="stat-box" id="timer">⏱ 0s</div>
+            <div class="stat-box" id="moves">🧩 0 Moves</div>
+            <div class="stat-box" id="score">⭐ 0</div>
+            <div class="stat-box" id="best">🏆 Best: 0</div>
+        </div>
     </div>
 
-    <div id="board"></div>
+    <div id="boardWrapper">
+        <div id="board"></div>
+    </div>
 
     <div id="servicesPanel">
         <h3>Our Services</h3>
-        <div class="service-card" onclick="showService('Custom Software & Web Development')"><img src="https://img.icons8.com/ios-filled/50/ffffff/source-code.png"/> Software Dev</div>
-        <div class="service-card" onclick="showService('Omnichannel Customer Support')"><img src="https://img.icons8.com/ios-filled/50/ffffff/customer-support.png"/> CX Partner</div>
-        <div class="service-card" onclick="showService('Visual & Strategic Branding')"><img src="https://img.icons8.com/ios-filled/50/ffffff/idea.png"/> Brand Dev</div>
-        <div class="service-card" onclick="showService('Performance Digital Marketing')"><img src="https://img.icons8.com/ios-filled/50/ffffff/marketing.png"/> Marketing</div>
-        <div class="service-card" onclick="showService('Strategic Sales Growth')"><img src="https://img.icons8.com/ios-filled/50/ffffff/sales-performance.png"/> Sales Strategy</div>
+        <div class="service-card" onclick="showService('Software & Web Development')"><img src="https://img.icons8.com/ios-filled/50/ffffff/source-code.png"/> Software Dev</div>
+        <div class="service-card" onclick="showService('Customer Support Experts')"><img src="https://img.icons8.com/ios-filled/50/ffffff/customer-support.png"/> CX Partner</div>
+        <div class="service-card" onclick="showService('Strategic Branding')"><img src="https://img.icons8.com/ios-filled/50/ffffff/idea.png"/> Brand Dev</div>
+        <div class="service-card" onclick="showService('Digital Marketing')"><img src="https://img.icons8.com/ios-filled/50/ffffff/marketing.png"/> Marketing</div>
+        <div class="service-card" onclick="showService('Sales Strategy')"><img src="https://img.icons8.com/ios-filled/50/ffffff/sales-performance.png"/> Sales Strategy</div>
     </div>
 </div>
 
 <div id="winMessage">
-    <h2>🏆 PUZZLE SOLVED! 🏆</h2>
-    <p style="font-size: 18px; font-weight: bold;">Incredible work!</p>
-    <div id="finalStats" style="margin: 20px 0; font-size: 18px;"></div>
-    <button onclick="startGame()" style="padding: 12px 25px; border:none; border-radius:8px; background:#28a745; color:white; font-weight:bold; cursor:pointer;">Play Again</button>
+    <h2>🏆 PUZZLE MASTER! 🏆</h2>
+    <p style="font-size: 18px; font-weight: bold; color: #1a3c6e;">Incredible work!</p>
+    <div id="finalStats" style="margin: 20px 0; font-size: 18px; font-weight: bold;"></div>
+    <button onclick="startGame()" style="padding: 12px 25px; border:none; border-radius:8px; background:#28a745; color:white; font-weight:bold; cursor:pointer; font-size: 16px;">Play Again</button>
 </div>
 
-<div id="serviceModal">
+<div id="serviceModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:25px; border-radius:12px; box-shadow:0 15px 50px rgba(0,0,0,.3); z-index:1000; width: 80%; max-width: 400px;">
     <p id="serviceText" style="margin:0; font-weight:500;"></p>
-    <button onclick="closeServiceModal()" style="margin-top:15px; padding:6px 12px; border:none; border-radius:6px; background:#1a73e8; color:white; cursor:pointer;">Close</button>
+    <button onclick="document.getElementById('serviceModal').style.display='none'" style="margin-top:15px; padding:8px 15px; border:none; border-radius:6px; background:#1a73e8; color:white; cursor:pointer;">Close</button>
 </div>
 
 <script>
-// --- CONSTANTS ---
 const BRAND_IMAGE = "https://www.shaggarbpo.com/wp-content/uploads/2026/01/cropped-Icon_only_primary.png";
 let size=4, board=document.getElementById("board");
 let moves=0, time=0, score=0, timer=null, dragged=null;
 let bestScore=localStorage.getItem("bestScore")||0;
 let isPlaying = false;
+
+function getBoardSize() { return board.clientWidth; }
 
 function startGame(){ 
     isPlaying = true;
@@ -213,14 +210,17 @@ function createPieces(){
     board.innerHTML=""; 
     size=parseInt(document.getElementById("difficulty").value); 
     board.style.gridTemplateColumns=`repeat(${size},1fr)`; 
-    let pSize=400/size; 
+    
+    const totalPixels = getBoardSize();
+    const pSize = totalPixels / size; 
+    
     for(let i=0; i < (size*size); i++){ 
         let r = Math.floor(i/size);
         let c = i % size;
         let p=document.createElement("div"); 
         p.className="piece"; 
         p.style.backgroundImage=`url(${BRAND_IMAGE})`; 
-        p.style.backgroundSize=`400px 400px`; 
+        p.style.backgroundSize=`${totalPixels}px ${totalPixels}px`; 
         p.style.backgroundPosition = `${-(c * pSize)}px ${-(r * pSize)}px`;
         p.dataset.correctIndex = i; 
         p.draggable=true; 
@@ -228,7 +228,8 @@ function createPieces(){
         p.addEventListener("dragstart",()=>dragged=p); 
         p.addEventListener("dragover",e=>e.preventDefault()); 
         p.addEventListener("drop",()=>swap(p)); 
-        p.addEventListener("touchstart",()=>dragged=p); 
+        
+        p.addEventListener("touchstart",(e)=>{ dragged=p; }, {passive: true}); 
         p.addEventListener("touchend",e=>{
             let t=document.elementFromPoint(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
             if(t && t.className==='piece') swap(t);
@@ -244,27 +245,20 @@ function shufflePieces(){
         board.appendChild(pieces[j]); 
     }
     if(checkWinStatus()) shufflePieces();
-    moves=0; 
-    updatePanel();
+    moves=0; updatePanel();
 }
 
 function swap(target){ 
     if(!dragged || dragged === target || !isPlaying) return; 
-    
     let pieces = Array.from(board.children);
     let i = pieces.indexOf(dragged);
     let j = pieces.indexOf(target);
-    
     let tempNode = document.createElement("div");
     board.insertBefore(tempNode, dragged);
     board.insertBefore(dragged, target);
     board.insertBefore(target, tempNode);
     tempNode.remove();
-
-    moves++; 
-    calculateScore(); 
-    updatePanel(); 
-    checkWin(); 
+    moves++; calculateScore(); updatePanel(); checkWin(); 
     new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3").play().catch(()=>{});
 }
 
@@ -277,20 +271,19 @@ function checkWin(){
     if(checkWinStatus()){ 
         isPlaying = false; clearInterval(timer); 
         board.classList.add("winner-glow");
-        launchConfetti(); 
+        launchConfetti();
         if(score>bestScore){ bestScore=score; localStorage.setItem("bestScore",score); }
-        document.getElementById("finalStats").innerHTML = `🏆 Score: ${score}<br>🧩 Moves: ${moves}<br>⏱ Time: ${time}s`; 
+        document.getElementById("finalStats").innerHTML = `🏆 Score: ${score}<br>⏱ Time: ${time}s<br>🧩 Moves: ${moves}`; 
         document.getElementById("winMessage").style.display="block";
         new Audio("https://assets.mixkit.co/active_storage/sfx/2764/2764-preview.mp3").play().catch(()=>{});
     }
 }
 
 function calculateScore(){ score=Math.max(0,(size*size*250)-(moves*12+time)); }
-
 function updatePanel(){ 
-    document.getElementById("timer").innerHTML=`⏱ Time: ${time}s`; 
-    document.getElementById("moves").innerHTML=`🧩 Moves: ${moves}`; 
-    document.getElementById("score").innerHTML=`⭐ Score: ${score}`; 
+    document.getElementById("timer").innerHTML=`⏱ ${time}s`; 
+    document.getElementById("moves").innerHTML=`🧩 ${moves} Moves`; 
+    document.getElementById("score").innerHTML=`⭐ ${score}`; 
     document.getElementById("best").innerHTML=`🏆 Best: ${bestScore}`;
 }
 
@@ -307,11 +300,9 @@ function showService(t){
     document.getElementById("serviceText").innerText=t; 
     document.getElementById("serviceModal").style.display="block"; 
 }
-function closeServiceModal(){ 
-    document.getElementById("serviceModal").style.display="none"; 
-}
 
-// Initialize Board Visually on load
+window.addEventListener('resize', () => { if(isPlaying) createPieces(); });
+
 createPieces();
 updatePanel();
 </script>
